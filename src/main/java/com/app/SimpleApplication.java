@@ -3,7 +3,6 @@ package com.app;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -61,6 +60,7 @@ public class SimpleApplication extends WebSecurityConfigurerAdapter {
 		List<Filter> filters = new ArrayList<>();
 		filters.add(ssoFilter(facebook(), "/login/facebook"));
 		filters.add(ssoFilter(github(), "/login/github"));
+		filters.add(ssoFilter(gmail(), "/login/gmail"));
 		filter.setFilters(filters);
 		return filter;
 	}
@@ -89,8 +89,14 @@ public class SimpleApplication extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@ConfigurationProperties("gmail")
+	public ClientResources gmail() {
+		return new ClientResources();
+	}
+
+	@Bean
 	public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-		FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<OAuth2ClientContextFilter>();
+		FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(filter);
 		registration.setOrder(-100);
 		return registration;
